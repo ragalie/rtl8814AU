@@ -4648,6 +4648,15 @@ ODM_AntDiv_Config(
 
 }
 
+#if (RTL8723B_SUPPORT == 1)||(RTL8821A_SUPPORT == 1)
+DECLARE_TIMER_FUNC(ODM_SW_AntDiv_Callback, struct DM_ODM_T, DM_SWAT_Table.SwAntennaSwitchTimer_8723B);
+#elif ( defined(CONFIG_5G_CG_SMART_ANT_DIVERSITY) ) ||( defined(CONFIG_2G_CG_SMART_ANT_DIVERSITY) )
+DECLARE_TIMER_FUNC(odm_FastAntTrainingCallback, struct DM_ODM_T, FastAntTrainingTimer);
+#endif
+
+#ifdef ODM_EVM_ENHANCE_ANTDIV
+DECLARE_TIMER_FUNC(odm_EVM_FastAntTrainingCallback, struct DM_ODM_T, EVM_FastAntTrainingTimer);
+#endif
 
 VOID
 ODM_AntDivTimers(
@@ -4660,15 +4669,15 @@ ODM_AntDivTimers(
 	{
 		#if (RTL8723B_SUPPORT == 1)||(RTL8821A_SUPPORT == 1)
 			ODM_InitializeTimer(pDM_Odm,&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer_8723B,
-			(RT_TIMER_CALL_BACK)ODM_SW_AntDiv_Callback, NULL, "SwAntennaSwitchTimer_8723B");
+			(RT_TIMER_CALL_BACK)TIMER_FUNC(ODM_SW_AntDiv_Callback), NULL, "SwAntennaSwitchTimer_8723B");
 		#elif ( defined(CONFIG_5G_CG_SMART_ANT_DIVERSITY) ) ||( defined(CONFIG_2G_CG_SMART_ANT_DIVERSITY) )
 			ODM_InitializeTimer(pDM_Odm,&pDM_Odm->FastAntTrainingTimer,
-			(RT_TIMER_CALL_BACK)odm_FastAntTrainingCallback, NULL, "FastAntTrainingTimer");
+			(RT_TIMER_CALL_BACK)TIMER_FUNC(odm_FastAntTrainingCallback), NULL, "FastAntTrainingTimer");
 		#endif
 
 		#ifdef ODM_EVM_ENHANCE_ANTDIV
 			ODM_InitializeTimer(pDM_Odm,&pDM_Odm->EVM_FastAntTrainingTimer,
-			(RT_TIMER_CALL_BACK)odm_EVM_FastAntTrainingCallback, NULL, "EVM_FastAntTrainingTimer");
+			(RT_TIMER_CALL_BACK)TIMER_FUNC(odm_EVM_FastAntTrainingCallback), NULL, "EVM_FastAntTrainingTimer");
 		#endif
 	}
 	else if(state==CANCEL_ANTDIV_TIMMER)

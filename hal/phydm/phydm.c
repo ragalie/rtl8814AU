@@ -1451,6 +1451,35 @@ odm_IsLinked(
 }
 */
 
+#if(defined(CONFIG_SW_ANTENNA_DIVERSITY))
+DECLARE_TIMER_FUNC(odm_SwAntDivChkAntSwitchCallback, DM_ODM_T, DM_SWAT_Table.SwAntennaSwitchTimer);
+#endif
+
+#if (DM_ODM_SUPPORT_TYPE == ODM_AP)
+#ifdef MP_TEST
+DECLARE_TIMER_FUNC(odm_MPT_DIGCallback, DM_ODM_T, MPT_DIGTimer);
+#endif
+#elif(DM_ODM_SUPPORT_TYPE == ODM_WIN)
+DECLARE_TIMER_FUNC(odm_MPT_DIGCallback, DM_ODM_T, MPT_DIGTimer);
+#endif
+
+#if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
+DECLARE_TIMER_FUNC(dm_PSDMonitorCallback, DM_ODM_T, PSDTimer);
+DECLARE_TIMER_FUNC(odm_PathDivChkAntSwitchCallback, DM_ODM_T, PathDivSwitchTimer);
+DECLARE_TIMER_FUNC(odm_CCKTXPathDiversityCallback, DM_ODM_T, CCKPathDiversityTimer);
+DECLARE_TIMER_FUNC(odm_PSD_RXHPCallback, DM_ODM_T, DM_RXHP_Table.PSDTimer);
+DECLARE_TIMER_FUNC(phydm_sbd_callback, DM_ODM_T, sbdcnt_timer);
+#if (BEAMFORMING_SUPPORT == 1)
+DECLARE_TIMER_FUNC(halComTxbf_FwNdpaTimerCallback, DM_ODM_T, BeamformingInfo.TxbfInfo.Txbf_FwNdpaTimer);
+#endif
+#endif
+
+#if (DM_ODM_SUPPORT_TYPE & (ODM_WIN | ODM_CE))
+#if (BEAMFORMING_SUPPORT == 1)
+DECLARE_TIMER_FUNC(Beamforming_SWTimerCallback, DM_ODM_T, BeamformingInfo.BeamformingTimer);
+#endif
+#endif
+
 VOID
 ODM_InitAllTimers(
 	IN PDM_ODM_T	pDM_Odm 
@@ -1460,41 +1489,41 @@ ODM_InitAllTimers(
 	ODM_AntDivTimers(pDM_Odm,INIT_ANTDIV_TIMMER);
 #elif(defined(CONFIG_SW_ANTENNA_DIVERSITY))
 	ODM_InitializeTimer(pDM_Odm,&pDM_Odm->DM_SWAT_Table.SwAntennaSwitchTimer,
-		(RT_TIMER_CALL_BACK)odm_SwAntDivChkAntSwitchCallback, NULL, "SwAntennaSwitchTimer");
+		(RT_TIMER_CALL_BACK)TIMER_FUNC(odm_SwAntDivChkAntSwitchCallback), NULL, "SwAntennaSwitchTimer");
 #endif
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_AP)
 #ifdef MP_TEST
 	if (pDM_Odm->priv->pshare->rf_ft_var.mp_specific) 
 		ODM_InitializeTimer(pDM_Odm, &pDM_Odm->MPT_DIGTimer, 
-			(RT_TIMER_CALL_BACK)odm_MPT_DIGCallback, NULL, "MPT_DIGTimer");	
+			(RT_TIMER_CALL_BACK)TIMER_FUNC(odm_MPT_DIGCallback), NULL, "MPT_DIGTimer");
 #endif
 #elif(DM_ODM_SUPPORT_TYPE == ODM_WIN)
 	ODM_InitializeTimer(pDM_Odm, &pDM_Odm->MPT_DIGTimer, 
-		(RT_TIMER_CALL_BACK)odm_MPT_DIGCallback, NULL, "MPT_DIGTimer");
+		(RT_TIMER_CALL_BACK)TIMER_FUNC(odm_MPT_DIGCallback), NULL, "MPT_DIGTimer");
 #endif
 
 #if (DM_ODM_SUPPORT_TYPE == ODM_WIN)
 	ODM_InitializeTimer(pDM_Odm, &pDM_Odm->PSDTimer, 
-		(RT_TIMER_CALL_BACK)dm_PSDMonitorCallback, NULL, "PSDTimer");
+		(RT_TIMER_CALL_BACK)TIMER_FUNC(dm_PSDMonitorCallback), NULL, "PSDTimer");
 	ODM_InitializeTimer(pDM_Odm, &pDM_Odm->PathDivSwitchTimer, 
-		(RT_TIMER_CALL_BACK)odm_PathDivChkAntSwitchCallback, NULL, "PathDivTimer");
+		(RT_TIMER_CALL_BACK)TIMER_FUNC(odm_PathDivChkAntSwitchCallback), NULL, "PathDivTimer");
 	ODM_InitializeTimer(pDM_Odm, &pDM_Odm->CCKPathDiversityTimer, 
-		(RT_TIMER_CALL_BACK)odm_CCKTXPathDiversityCallback, NULL, "CCKPathDiversityTimer");
+		(RT_TIMER_CALL_BACK)TIMER_FUNC(odm_CCKTXPathDiversityCallback), NULL, "CCKPathDiversityTimer");
 	ODM_InitializeTimer(pDM_Odm, &pDM_Odm->DM_RXHP_Table.PSDTimer,
-		(RT_TIMER_CALL_BACK)odm_PSD_RXHPCallback, NULL, "PSDRXHPTimer"); 
+		(RT_TIMER_CALL_BACK)TIMER_FUNC(odm_PSD_RXHPCallback), NULL, "PSDRXHPTimer");
 	ODM_InitializeTimer(pDM_Odm, &pDM_Odm->sbdcnt_timer,
-		(RT_TIMER_CALL_BACK)phydm_sbd_callback, NULL, "SbdTimer"); 
+		(RT_TIMER_CALL_BACK)TIMER_FUNC(phydm_sbd_callback), NULL, "SbdTimer");
 #if (BEAMFORMING_SUPPORT == 1)
 	ODM_InitializeTimer(pDM_Odm, &pDM_Odm->BeamformingInfo.TxbfInfo.Txbf_FwNdpaTimer,
-		(RT_TIMER_CALL_BACK)halComTxbf_FwNdpaTimerCallback, NULL, "Txbf_FwNdpaTimer");
+		(RT_TIMER_CALL_BACK)TIMER_FUNC(halComTxbf_FwNdpaTimerCallback), NULL, "Txbf_FwNdpaTimer");
 #endif
 #endif
 
 #if (DM_ODM_SUPPORT_TYPE & (ODM_WIN | ODM_CE))
 #if (BEAMFORMING_SUPPORT == 1)
 	ODM_InitializeTimer(pDM_Odm, &pDM_Odm->BeamformingInfo.BeamformingTimer,
-		(RT_TIMER_CALL_BACK)Beamforming_SWTimerCallback, NULL, "BeamformingTimer");
+		(RT_TIMER_CALL_BACK)TIMER_FUNC(Beamforming_SWTimerCallback), NULL, "BeamformingTimer");
 #endif
 #endif
 }

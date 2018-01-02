@@ -759,11 +759,13 @@ void _rtw_reordering_ctrl_timeout_handler (void *FunctionContext)
 	rtw_reordering_ctrl_timeout_handler(preorder_ctrl);
 }
 
+DECLARE_TIMER_FUNC(_rtw_reordering_ctrl_timeout_handler, struct recv_reorder_ctrl, reordering_ctrl_timer);
+
 void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl)
 {
 	_adapter *padapter = preorder_ctrl->padapter;
 
-	_init_timer(&(preorder_ctrl->reordering_ctrl_timer), padapter->pnetdev, _rtw_reordering_ctrl_timeout_handler, preorder_ctrl);
+	_init_timer(&(preorder_ctrl->reordering_ctrl_timer), padapter->pnetdev, TIMER_FUNC(_rtw_reordering_ctrl_timeout_handler), preorder_ctrl);
 
 }
 

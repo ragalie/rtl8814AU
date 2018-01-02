@@ -4410,13 +4410,15 @@ int rtw_p2p_check_frames(_adapter *padapter, const u8 *buf, u32 len, u8 tx)
 	return is_p2p_frame;
 }
 
+DECLARE_TIMER_FUNC(ro_ch_timer_process, _adapter, cfg80211_wdinfo.remain_on_ch_timer);
+
 void rtw_init_cfg80211_wifidirect_info( _adapter*	padapter)
 {
 	struct cfg80211_wifidirect_info *pcfg80211_wdinfo = &padapter->cfg80211_wdinfo;
 
 	_rtw_memset(pcfg80211_wdinfo, 0x00, sizeof(struct cfg80211_wifidirect_info) );
     
-	_init_timer( &pcfg80211_wdinfo->remain_on_ch_timer, padapter->pnetdev, ro_ch_timer_process, padapter );
+	_init_timer( &pcfg80211_wdinfo->remain_on_ch_timer, padapter->pnetdev, TIMER_FUNC(ro_ch_timer_process), padapter );
 }
 #endif //CONFIG_IOCTL_CFG80211	
 
@@ -4940,17 +4942,26 @@ int rtw_init_wifi_display_info(_adapter* padapter)
 }
 #endif //CONFIG_WFD
 
+DECLARE_TIMER_FUNC(find_phase_timer_process, _adapter, wdinfo.find_phase_timer);
+DECLARE_TIMER_FUNC(restore_p2p_state_timer_process, _adapter, wdinfo.restore_p2p_state_timer);
+DECLARE_TIMER_FUNC(pre_tx_scan_timer_process, _adapter, wdinfo.pre_tx_scan_timer);
+DECLARE_TIMER_FUNC(reset_ch_sitesurvey_timer_process, _adapter, wdinfo.reset_ch_sitesurvey);
+DECLARE_TIMER_FUNC(reset_ch_sitesurvey_timer_process2, _adapter, wdinfo.reset_ch_sitesurvey2);
+#ifdef CONFIG_CONCURRENT_MODE
+DECLARE_TIMER_FUNC(ap_p2p_switch_timer_process, _adapter, wdinfo.ap_p2p_switch_timer);
+#endif
+
 void rtw_init_wifidirect_timers(_adapter* padapter)
 {
 	struct wifidirect_info *pwdinfo = &padapter->wdinfo;
 
-	_init_timer( &pwdinfo->find_phase_timer, padapter->pnetdev, find_phase_timer_process, padapter );
-	_init_timer( &pwdinfo->restore_p2p_state_timer, padapter->pnetdev, restore_p2p_state_timer_process, padapter );
-	_init_timer( &pwdinfo->pre_tx_scan_timer, padapter->pnetdev, pre_tx_scan_timer_process, padapter );
-	_init_timer( &pwdinfo->reset_ch_sitesurvey, padapter->pnetdev, reset_ch_sitesurvey_timer_process, padapter );
-	_init_timer( &pwdinfo->reset_ch_sitesurvey2, padapter->pnetdev, reset_ch_sitesurvey_timer_process2, padapter );
+	_init_timer( &pwdinfo->find_phase_timer, padapter->pnetdev, TIMER_FUNC(find_phase_timer_process), padapter );
+	_init_timer( &pwdinfo->restore_p2p_state_timer, padapter->pnetdev, TIMER_FUNC(restore_p2p_state_timer_process), padapter );
+	_init_timer( &pwdinfo->pre_tx_scan_timer, padapter->pnetdev, TIMER_FUNC(pre_tx_scan_timer_process), padapter );
+	_init_timer( &pwdinfo->reset_ch_sitesurvey, padapter->pnetdev, TIMER_FUNC(reset_ch_sitesurvey_timer_process), padapter );
+	_init_timer( &pwdinfo->reset_ch_sitesurvey2, padapter->pnetdev, TIMER_FUNC(reset_ch_sitesurvey_timer_process2), padapter );
 #ifdef CONFIG_CONCURRENT_MODE
-	_init_timer( &pwdinfo->ap_p2p_switch_timer, padapter->pnetdev, ap_p2p_switch_timer_process, padapter );
+	_init_timer( &pwdinfo->ap_p2p_switch_timer, padapter->pnetdev, TIMER_FUNC(ap_p2p_switch_timer_process), padapter );
 #endif
 }
 

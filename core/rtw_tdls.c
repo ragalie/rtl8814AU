@@ -3043,16 +3043,24 @@ void _tdls_pti_timer_hdl(void *FunctionContext)
 	}
 }
 
+DECLARE_TIMER_FUNC(_tdls_tpk_timer_hdl, struct sta_info, TPK_timer);
+#ifdef CONFIG_TDLS_CH_SW
+DECLARE_TIMER_FUNC(_tdls_ch_switch_timer_hdl, struct sta_info, ch_sw_timer);
+DECLARE_TIMER_FUNC(_tdls_delay_timer_hdl, struct sta_info, delay_timer);
+#endif
+DECLARE_TIMER_FUNC(_tdls_handshake_timer_hdl, struct sta_info, handshake_timer);
+DECLARE_TIMER_FUNC(_tdls_pti_timer_hdl, struct sta_info, pti_timer);
+
 void rtw_init_tdls_timer(_adapter *padapter, struct sta_info *psta)
 {
 	psta->padapter=padapter;
-	_init_timer(&psta->TPK_timer, padapter->pnetdev, _tdls_tpk_timer_hdl, psta);
+	_init_timer(&psta->TPK_timer, padapter->pnetdev, TIMER_FUNC(_tdls_tpk_timer_hdl), psta);
 #ifdef CONFIG_TDLS_CH_SW	
-	_init_timer(&psta->ch_sw_timer, padapter->pnetdev, _tdls_ch_switch_timer_hdl, psta);
-	_init_timer(&psta->delay_timer, padapter->pnetdev, _tdls_delay_timer_hdl, psta);
+	_init_timer(&psta->ch_sw_timer, padapter->pnetdev, TIMER_FUNC(_tdls_ch_switch_timer_hdl), psta);
+	_init_timer(&psta->delay_timer, padapter->pnetdev, TIMER_FUNC(_tdls_delay_timer_hdl), psta);
 #endif
-	_init_timer(&psta->handshake_timer, padapter->pnetdev, _tdls_handshake_timer_hdl, psta);
-	_init_timer(&psta->pti_timer, padapter->pnetdev, _tdls_pti_timer_hdl, psta);
+	_init_timer(&psta->handshake_timer, padapter->pnetdev, TIMER_FUNC(_tdls_handshake_timer_hdl), psta);
+	_init_timer(&psta->pti_timer, padapter->pnetdev, TIMER_FUNC(_tdls_pti_timer_hdl), psta);
 }
 
 void rtw_free_tdls_timer(struct sta_info *psta)

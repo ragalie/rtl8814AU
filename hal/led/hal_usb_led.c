@@ -5143,6 +5143,8 @@ void ResetLedStatus(PLED_USB pLed) {
 	pLed->bLedScanBlinkInProgress = _FALSE;
 }
 
+DECLARE_TIMER_FUNC(BlinkTimerCallback, struct _LED_USB, BlinkTimer);
+
  //
 //	Description:
 //		Initialize an LED_871x object.
@@ -5158,7 +5160,7 @@ InitLed(
 	pLed->LedPin = LedPin;
 
 	ResetLedStatus(pLed);
-	_init_timer(&(pLed->BlinkTimer), padapter->pnetdev, BlinkTimerCallback, pLed);
+	_init_timer(&(pLed->BlinkTimer), padapter->pnetdev, TIMER_FUNC(BlinkTimerCallback), pLed);
 	_init_workitem(&(pLed->BlinkWorkItem), BlinkWorkItemCallback, pLed);
 }
 

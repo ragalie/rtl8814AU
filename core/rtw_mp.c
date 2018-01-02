@@ -529,6 +529,9 @@ static void PHY_IQCalibrate(PADAPTER padapter, u8 bReCovery)
 #define PHY_SetRFPathSwitch(a, b)	PHY_SetRFPathSwitch_8188F(a, b)
 #endif
 
+void MPh2c_timeout_handle(void *FunctionContext);
+DECLARE_TIMER_FUNC(MPh2c_timeout_handle, _adapter, mppriv.MptCtx.MPh2c_timeout_timer);
+
 s32
 MPT_InitializeAdapter(
 	IN	PADAPTER			pAdapter,
@@ -551,7 +554,7 @@ MPT_InitializeAdapter(
 	pMptCtx->MptH2cRspEvent = _FALSE;
 	pMptCtx->MptBtC2hEvent = _FALSE;
 	_rtw_init_sema(&pMptCtx->MPh2c_Sema, 0);
-	_init_timer( &pMptCtx->MPh2c_timeout_timer, pAdapter->pnetdev, MPh2c_timeout_handle, pAdapter );
+	_init_timer( &pMptCtx->MPh2c_timeout_timer, pAdapter->pnetdev, TIMER_FUNC(MPh2c_timeout_handle), pAdapter );
 #endif
 
 	mpt_InitHWConfig(pAdapter);
