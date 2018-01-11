@@ -118,7 +118,7 @@ rtl8814au_InitSwLeds(
 
 	pledpriv->LedControlHandler = LedControlUSB;
 
-	pledpriv->SwLedOn = SwLedOn_8814AU;
+	pledpriv->SwLedOn = SwLedOff_8814AU;
 	pledpriv->SwLedOff = SwLedOff_8814AU;
 
 	InitLed(padapter, &(pledpriv->SwLed0), LED_PIN_LED0);
