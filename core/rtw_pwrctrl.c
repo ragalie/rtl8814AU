@@ -2094,12 +2094,6 @@ _func_exit_;
 static void resume_workitem_callback(struct work_struct *work);
 #endif //CONFIG_RESUME_IN_WORKQUEUE
 
-#ifdef CONFIG_LPS_RPWM_TIMER
-DECLARE_TIMER_FUNC2(pwr_rpwm_timeout_handler, _adapter, dvobj->pwrctl_priv.pwr_rpwm_timer);
-#endif
-
-DECLARE_TIMER_FUNC2(pwr_state_check_handler, _adapter, dvobj->pwrctl_priv.pwr_state_check_timer);
-
 void rtw_init_pwrctrl_priv(PADAPTER padapter)
 {
 	struct pwrctrl_priv *pwrctrlpriv = adapter_to_pwrctl(padapter);
@@ -2169,11 +2163,11 @@ _func_enter_;
 #ifdef CONFIG_LPS_RPWM_TIMER
 	pwrctrlpriv->brpwmtimeout = _FALSE;
 	_init_workitem(&pwrctrlpriv->rpwmtimeoutwi, rpwmtimeout_workitem_callback, NULL);
-	_init_timer(&pwrctrlpriv->pwr_rpwm_timer, padapter->pnetdev, TIMER_FUNC(pwr_rpwm_timeout_handler), padapter);
+	_init_timer(&pwrctrlpriv->pwr_rpwm_timer, padapter->pnetdev, pwr_rpwm_timeout_handler, padapter);
 #endif // CONFIG_LPS_RPWM_TIMER
 #endif // CONFIG_LPS_LCLK
 
-	rtw_init_timer(&pwrctrlpriv->pwr_state_check_timer, padapter, TIMER_FUNC(pwr_state_check_handler));
+	rtw_init_timer(&pwrctrlpriv->pwr_state_check_timer, padapter, pwr_state_check_handler);
 
 	pwrctrlpriv->wowlan_mode = _FALSE;
 	pwrctrlpriv->wowlan_ap_mode = _FALSE;
