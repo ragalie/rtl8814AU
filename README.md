@@ -1,11 +1,11 @@
 # rtl8814AU
 Realtek 8814AU USB WiFi driver.
 
-Forked from [Diederik de Haas](https://github.com/diederikdehaas/rtl8814AU)'
-repository which is based on version 4.3.21 of an Edimax driver for the
-EW-7833UAC device.
+This is a temporary fork that merges updates from tpircher:devices and
+the Ubuntu 17.10-specific work that HomerSp has done.
 
-Updated with support for kernels >= 4.14.
+Once 18.04 comes out (and tpircher merges in the devices branch) we can
+probably switch to using tpircher's master instead.
 
 # DKMS support
 
